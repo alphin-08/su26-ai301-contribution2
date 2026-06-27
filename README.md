@@ -1,5 +1,4 @@
 # Contribution [2]: [Bug] EConsult2Action: frontend()/login() return null instead of NONE after redirect; redundant isValidTask protocol check
- #3068
 
 **Contribution Number:** 2  
 **Student:** Alphin Shajan  
@@ -9,7 +8,7 @@
 ---
 
 ## Why I Chose This Issue
-
+I picked this issue because it follows the exact same return NONE contract pattern I already worked on in issue 2885. That familiarity made me confident I could handle it without needing to learn a completely new part of the codebase. I also wanted to keep building momentum on the same project rather than starting fresh somewhere else.
 
 
 ---
@@ -18,19 +17,21 @@
 
 ### Problem Description
 
+The Java class EConsult2Action handles eConsult redirects in the CARLOS system. Two methods called frontend and login send a web redirect and then return null. The project rules state that any action sending a redirect must return NONE right away. Returning null is risky because the Struts framework might still try to load a page after the redirect. There is also a problem in a helper method called isValidTask. It has a section of code meant to block dangerous web links but this section is dead code because a filter above it already blocks any text containing a colon. This dead code offers no extra protection but triggers a scanner warning.
 
 
 ### Expected Behavior
 
+The frontend and login methods should return NONE right after a successful redirect. This tells Struts that the response is complete. If the redirect fails and causes an error, the methods should return the word error instead of doing nothing. The dead code in isValidTask should be removed because the filter above it already catches those bad links.
 
 
 ### Current Behavior
 
-
+The frontend and login methods try to send a redirect and then return null no matter what happens. This means a failed redirect fails silently instead of showing an error page. The dead code in isValidTask is still there on lines 419 to 424. It triggers an IMPROPER UNICODE scanner warning even though the code never runs.
 
 ### Affected Components
 
-
+The main file needing changes is the EConsult2Action Java file. The test file EConsult2ActionUnitTest must also be updated to check the return values for the frontend and login methods which includes testing what happens when the redirect fails.
 
 ---
 
