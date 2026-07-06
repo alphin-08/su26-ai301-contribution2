@@ -3,7 +3,7 @@
 **Contribution Number:** 2  
 **Student:** Alphin Shajan  
 **Issue:** https://github.com/carlos-emr/carlos/issues/3068 
-**Status:** Phase I / II
+**Status:** Phase IV
 ---
 
 ## Why I Chose This Issue
@@ -61,7 +61,7 @@ Confirming the dead code in the isValidTask method.
    
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** 
+- **Commit showing reproduction:** https://github.com/alphin-08/carlos/commit/492b67f99bb2a6bad1f082f2dadb2750369e7440 
 - **Screenshots/logs:** Not applicable since this is a code convention issue and not a visible crash.
 - **My findings:**  I confirmed that both the frontend and login methods fall through to return null on both the success path and the error path, making them unreliable.
 The protocol injection block in the isValidTask method is definitely unreachable because the filter above it rejects any string containing a colon, and a colon is required for every payload the block was trying to catch.
@@ -127,20 +127,18 @@ Since this was just fixing code style and not an actual glitch you'd see on the 
 
 ### Week [1] Progress
 
-
+Week one went quickly because I did not have to set up the environment again. It was already ready from the first issue I solved on this same project. Most of the week was spent searching for the right issue to take on. Once I found this one, I waited to be assigned to it by the maintainers. After that I spent my time digging deep into what the issue was actually asking for. I read through the EConsult2Action class carefully, traced how the redirect methods ended, and confirmed the dead code claim myself before writing anything. I also worked on the documentation during this time so my understanding of the problem was written down clearly before I touched any code
 
 ### Week [2] Progress
 
-
-
-### Week [3] Progress
+Week two was fully focused on implementing the fix and testing it. I made the changes to the two redirect methods, removed the dead code from the validation helper, and then wrote the unit tests to cover both the success and failure paths. Once the tests passed and the build came back clean, I raised a pull request toward the end of the week. That pull request is still open right now. I am waiting patiently for a maintainer to review it and approve it.
 
 
 ### Code Changes
 
-- **Files modified:** 
-- **Key commits:** 
-- **Approach decisions:** 
+- **Files modified:** src/main/java/io/github/carlos_emr/carlos/encounter/oscarConsultationRequest/pageUtil/EConsult2Action.java for the actual fix, and src/test/java/io/github/carlos_emr/carlos/encounter/oscarConsultationRequest/pageUtil/EConsult2ActionUnitTest.java for the new tests.
+- **Key commits:** https://github.com/alphin-08/carlos/commit/492b67f99bb2a6bad1f082f2dadb2750369e7440 
+- **Approach decisions:** I chose to return NONE on the success path and error inside the catch block so every exit is handled on purpose instead of falling through to null. I decided to delete the dead protocol block completely rather than stopping the scanner warning, since the pattern filter above it already blocks those payloads. For the tests, I mocked the CarlosProperties singleton with a thread local mockStatic instead of changing the global instance so the tests stay safe to run in parallel.
 
 ---
 
