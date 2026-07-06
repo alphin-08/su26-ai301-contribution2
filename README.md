@@ -108,9 +108,10 @@ Both methods now end cleanly at every exit point, and a failed redirect routes t
 
 ### Unit Tests
 
-- [ ] Test case 1: 
-- [ ] Test case 2: 
-- [ ] Test case 3: 
+- [ ] Test case 1: login() returns NONE after a successful redirect. This test mocks the response so the redirect goes through, then confirms login returns NONE and that sendRedirect was actually called.
+- [ ] Test case 2: login() returns error when the redirect throws an IOException. This test forces sendRedirect to fail and confirms login returns the error result instead of falling through.
+- [ ] Test case 3: frontend() returns NONE after a successful redirect. This test sets up a valid session token and email, lets the redirect succeed, then confirms frontend returns NONE and that sendRedirect was called.
+- [ ] Test case 4: frontend() returns error when the redirect throws an IOException. This test uses the same valid session but forces sendRedirect to fail, then confirms frontend returns the error result.
 
 ### Integration Tests
 
