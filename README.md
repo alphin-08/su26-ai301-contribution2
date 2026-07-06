@@ -72,10 +72,12 @@ The protocol injection block in the isValidTask method is definitely unreachable
 
 ### Analysis
 
+After doing some analysis, I realized both problems came from letting the code drop down to a default answer instead of telling it exactly when to stop. The frontend and login methods send a redirect but never return anything right after. The code just keeps going down to a single null return at the bottom, which means the success and failure paths end the exact same way. Once a redirect is sent, the response is committed to the browser, so the program should stop immediately with a NONE return. The second problem was the dead code inside the helper method that checks if the task parameter is safe. A pattern filter at the top already rejects any string with a colon, which means the lower block checking for dangerous protocols can never run. This lower block gives zero extra protection and causes a scanner warning, so removing it entirely was the safest move.
 
 
 ### Proposed Solution
 
+My plan was to make both redirect methods return on purpose at every exit. On the success path, the method should return NONE right after the redirect call. On the failure path, the method should return the error result instead of doing nothing and dropping down to a null return. This ensures a failed redirect routes to an error page instead of failing silently. I also planned to delete the dead protocol block from the helper method since the pattern filter above it already does the real work of rejecting unsafe characters. Finally, I planned to add unit tests to confirm both methods return NONE after a successful redirect and return an error when the redirect fails.
 
 
 ### Implementation Plan
@@ -83,18 +85,22 @@ The protocol injection block in the isValidTask method is definitely unreachable
 Using UMPIRE framework (adapted):
 
 **Understand:** 
+The frontend and login methods must return NONE after a successful redirect and return an error when the redirect fails. The dead protocol check must be removed because the pattern filter already blocks those payloads.
 
 **Match:**
+This matches the same problem I worked on in a previous issue where actions writing directly to the response must end with NONE. They also need to handle their own error responses.
 
 **Plan:** 
-
+First I would fix the two redirect methods by adding the correct returns for success and failure, and then I would delete the leftover null returns. Next I would remove the dead protocol block and add unit tests for all four success and failure cases.
 
 **Implement:** 
-
+I edited the file so the methods return NONE after the redirect and return an error on the failure path. I removed the unreachable protocol block and added a nested test class that mocks the required components so the tests can run safely in parallel.
 
 **Review:**
+I checked that the success tests confirm a NONE return and that the failure tests confirm an error return. I also made sure removing the protocol block did not change what the helper method rejects.
 
 **Evaluate:**
+Both methods now end cleanly at every exit point, and a failed redirect routes to an error page. The static analysis warning is gone, and the new tests lock the behavior in place so the old pattern cannot return.
 
 ---
 
