@@ -133,6 +133,10 @@ Week one went quickly because I did not have to set up the environment again. It
 
 Week two was fully focused on implementing the fix and testing it. I made the changes to the two redirect methods, removed the dead code from the validation helper, and then wrote the unit tests to cover both the success and failure paths. Once the tests passed and the build came back clean, I raised a pull request toward the end of the week. That pull request is still open right now. I am waiting patiently for a maintainer to review it and approve it.
 
+### Week [3[ Progress
+
+Week three was spent mostly on writing the documentation for this pr. I went back through everything I had done and wrote it all out clearly so the work would be easy to follow. Alongside that I kept an eye on the open pull request and waited for a maintainer to reach back to me with feedback, which has not come yet. I also started looking through the issue tracker again to find another good issue to take on next. I want to pick something that fits what I already know and is actually open for me to work on. So this week was a mix of finishing the documentation, waiting patiently for a review on the current pull request, and searching for what to work on after this one.
+
 
 ### Code Changes
 
@@ -144,13 +148,17 @@ Week two was fully focused on implementing the fix and testing it. I made the ch
 
 ## Pull Request
 
-**PR Link:** 
+**PR Link:** https://github.com/carlos-emr/carlos/pull/3109 
 
-**PR Description:** 
+**PR Description:** Fixes two small things in EConsult2Action for issue #3068. The frontend and login methods used to send a redirect and then return null. Now they return NONE after a good redirect, and they return ERROR if the redirect fails instead of doing nothing. I also removed a dead if block in isValidTask. The regex at the top already blocks anything with a colon, so that block never ran, and removing it also gets rid of a scanner warning. The redirect links themselves did not change, only what the methods return.
 
-**Maintainer Feedback:** 
+Related issue is #3068, which this pull request fixes.
 
-**Status:** Merged
+For testing, I added unit tests in EConsult2ActionUnitTest that checks if frontend and login returns NONE on a good redirect and ERROR when the redirect throws an IOException. Running mvn test on that class showed 22 tests run with zero failures and zero errors and a clean BUILD SUCCESS. All the older tests still pass too.
+
+**Maintainer Feedback:** I have not received any maintainer feedback yet. The pull request has been open for more than two weeks now. I even tried tagging one of the maintainers in hopes that they would notice it, but no one has messaged me back so far. The pull request is still open and I am waiting patiently for someone to review it.
+
+**Status:** Open and awaiting review.
 
 ---
 
@@ -158,12 +166,15 @@ Week two was fully focused on implementing the fix and testing it. I made the ch
 
 ### Technical Skills Gained
 
+I got more comfortable with the return NONE contract that Struts actions have to follow when they send a redirect. I also learned how to spot dead code by tracing the logic above it, since the regex filter made that code block impossible to reach. On the testing side I learned how to mock static methods so the tests could run at the same time without interfering with each other.
 
 ### Challenges Overcome
 
+The trickiest part was proving the protocol block was truly dead code instead of just assuming it. I had to walk through the regex carefully and confirm that a colon could never get past it. Writing the tests was also a challenge because the action sets up its dependencies the moment it is created, so I had to mock the request, the response, the SecurityInfoManager, and the CarlosProperties singleton before building the action.
 
 ### What I'd Do Differently Next Time
 
+Next time I would reach out to the maintainers a little earlier and more clearly when a pull request sits without a review for a while. I waited a long time before tagging anyone, and looking back I could have followed up sooner in a polite way to keep the review moving.
  
 ---
 
